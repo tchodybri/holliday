@@ -1,5 +1,5 @@
 
-From tomcat:8-jre8 
+From tomcat:latest 
 
 # Maintainer 
 MAINTAINER "tchodybrimotto22@yahoo.com" 
