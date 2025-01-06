@@ -30,19 +30,28 @@ jobs:
       - name: Build WAR file
         run: mvn clean package -X
 
+      # Configure AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get AWS Account ID
+        run: |
+          aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
+          echo "AWS Account ID: $aws_account_id"
+
       # Log in to Amazon ECR
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       # Build the Docker image
       - name: Build Docker Image
         run: |
           aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
-          region=${AWS_REGION}
+          region=${{ secrets.AWS_REGION }}
           repository_name=tdb-maven-project
           image_tag=latest
 
