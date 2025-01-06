@@ -28,7 +28,7 @@ jobs:
 
       # Build the WAR file using Maven
       - name: Build WAR file
-        run: mvn clean package
+        run: mvn clean package -X
 
       # Log in to Amazon ECR
       - name: Log in to Amazon ECR
