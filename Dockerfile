@@ -1,5 +1,5 @@
 
-From tomcat:latest  
+FROM tomcat:latest  
 
 # Maintainer 
 MAINTAINER "Dylan Tchomba" 
