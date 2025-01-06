@@ -1,0 +1,63 @@
+name: Build and Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: debian-latest
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      # Checkout the source code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Set up Java environment for Maven
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # Build the WAR file using Maven
+      - name: Build WAR file
+        run: mvn clean package
+
+      # Log in to Amazon ECR
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # Build the Docker image
+      - name: Build Docker Image
+        run: |
+          aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
+          region=${AWS_REGION}
+          repository_name=tdb-maven-project
+          image_tag=latest
+
+          # Validate variables
+          if [[ -z "$aws_account_id" || -z "$region" || -z "$repository_name" ]]; then
+          echo "Error: One or more required variables are not set."
+          exit 1
+          fi
+          docker build -t $aws_account_id.dkr.ecr.$region.amazonaws.com/$repository_name:$image_tag .
+        
+      # Push the Docker image to Amazon ECR
+      - name: Push Docker Image to ECR
+        run: |
+          aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
+          region=${AWS_REGION}
+          repository_name=tdb-maven-project
+          image_tag=latest
+          docker push $aws_account_id.dkr.ecr.$region.amazonaws.com/$repository_name:$image_tag
