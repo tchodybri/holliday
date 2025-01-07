@@ -53,7 +53,7 @@ jobs:
           aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
           region=${{ secrets.AWS_REGION }}
           repository_name=tdb-maven-project
-          image_tag=$(date +%Y%m%d%H%M%S)
+          image_tag=$(date +%d%H%M)
 
           # Validate variables
           if [[ -z "$aws_account_id" || -z "$region" || -z "$repository_name" ]]; then
@@ -70,5 +70,5 @@ jobs:
           aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
           region=${AWS_REGION}
           repository_name=tdb-maven-project
-          image_tag=latest
+          image_tag=$(date +%d%H%M)
           docker push $aws_account_id.dkr.ecr.$region.amazonaws.com/$repository_name:$image_tag
