@@ -61,7 +61,7 @@ jobs:
           exit 1
           fi
           docker build -t $aws_account_id.dkr.ecr.$region.amazonaws.com/$repository_name:$image_tag .
-          docker tag 077537906040.dkr.ecr.us-west-2.amazonaws.com/tdb-maven-project:$IMAGE_TAG 077537906040.dkr.ecr.us-west-2.amazonaws.com/tdb-maven-project:latest
+          docker tag 077537906040.dkr.ecr.us-west-2.amazonaws.com/$repository_name:$IMAGE_TAG 077537906040.dkr.ecr.us-west-2.amazonaws.com/$repository_name:latest
           echo $IMAGE_TAG > image-tag.txt
         
       # Push the Docker image to Amazon ECR
