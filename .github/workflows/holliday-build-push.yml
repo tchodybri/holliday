@@ -53,7 +53,7 @@ jobs:
           aws_account_id=$(aws sts get-caller-identity --query "Account" --output text)
           region=${{ secrets.AWS_REGION }}
           repository_name=tdb-maven-project
-          image_tag=latest
+          image_tag=$(date +%Y%m%d%H%M%S)
 
           # Validate variables
           if [[ -z "$aws_account_id" || -z "$region" || -z "$repository_name" ]]; then
@@ -61,6 +61,8 @@ jobs:
           exit 1
           fi
           docker build -t $aws_account_id.dkr.ecr.$region.amazonaws.com/$repository_name:$image_tag .
+          docker tag 077537906040.dkr.ecr.us-west-2.amazonaws.com/tdb-maven-project:$IMAGE_TAG 077537906040.dkr.ecr.us-west-2.amazonaws.com/tdb-maven-project:latest
+          echo $IMAGE_TAG > image-tag.txt
         
       # Push the Docker image to Amazon ECR
       - name: Push Docker Image to ECR
